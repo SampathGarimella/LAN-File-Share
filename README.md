@@ -179,14 +179,17 @@ Note: clients must trust the certificate authority you used (mkcert installs it 
 This repository includes a Netlify Function that injects the backend URL automatically.
 
 Files:
+
 - `frontend/netlify/functions/auto-pair.js`
 - `frontend/netlify.toml`
 
 What it does:
+
 - Requests to `/` are routed to the function which redirects to `/?api=<API_BASE_URL>`
 - The frontend reads and stores `?api=`, so users don’t enter anything.
 
 Netlify settings:
+
 - Base directory: `frontend`
 - Build command: `npm run build` (or `npm ci && npm run build`)
 - Publish directory: `dist`
@@ -196,6 +199,7 @@ Netlify settings:
   - `NODE_VERSION` = `18`
 
 Backend settings:
+
 - Start HTTPS backend and set:
   - `FRONTEND_URL=https://<your-site>.netlify.app`
   - `PUBLIC_BASE_URL=https://lan-share.local:3443`
