@@ -143,6 +143,67 @@ Uploads created during tests are small and stored under `backend/uploads`.
 
 ---
 
+## Using with Netlify (HTTPS backend recommended)
+
+Netlify serves your frontend over HTTPS. Browsers block requests from HTTPS → HTTP.
+
+Use an HTTPS backend on the LAN:
+
+1. Generate a local certificate (mkcert example on macOS):
+   ```bash
+   brew install mkcert nss
+   mkcert -install
+   mkdir -p backend/certs
+   # Include hostnames or IPs you will use
+   mkcert -key-file backend/certs/key.pem -cert-file backend/certs/cert.pem "lan-share.local" 192.168.1.10
+   ```
+2. Start HTTPS server:
+   ```bash
+   cd backend
+   FRONTEND_URL=https://<your-site>.netlify.app \
+   PUBLIC_BASE_URL=https://lan-share.local:3443 \
+   HTTPS_PORT=3443 \
+   npm run start:https
+   ```
+3. Pair the frontend with the backend (any of):
+   - Open: `https://<your-site>.netlify.app/?api=https://lan-share.local:3443`
+   - Or visit: `http://<lan-ip>:3000/bootstrap` (redirects to your Netlify site with `?api=`)
+   - Or scan: `http://<lan-ip>:3000/boot-qr`
+
+Note: clients must trust the certificate authority you used (mkcert installs it on the host; other devices may need additional trust steps).
+
+---
+
+## Automatic pairing on Netlify (no manual entry)
+
+This repository includes a Netlify Function that injects the backend URL automatically.
+
+Files:
+- `frontend/netlify/functions/auto-pair.js`
+- `frontend/netlify.toml`
+
+What it does:
+- Requests to `/` are routed to the function which redirects to `/?api=<API_BASE_URL>`
+- The frontend reads and stores `?api=`, so users don’t enter anything.
+
+Netlify settings:
+- Base directory: `frontend`
+- Build command: `npm run build` (or `npm ci && npm run build`)
+- Publish directory: `dist`
+- Functions directory: `frontend/netlify/functions`
+- Environment variables:
+  - `API_BASE_URL` = `https://lan-share.local:3443` (your stable HTTPS LAN backend)
+  - `NODE_VERSION` = `18`
+
+Backend settings:
+- Start HTTPS backend and set:
+  - `FRONTEND_URL=https://<your-site>.netlify.app`
+  - `PUBLIC_BASE_URL=https://lan-share.local:3443`
+
+After deploy, opening the site root will auto-pair and no manual backend entry is needed.
+
+---
+
 ## Usage Flow
 
 1. Start the backend on your LAN computer (`node backend/server.js`).

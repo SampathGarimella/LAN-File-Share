@@ -9,6 +9,7 @@ function normalizeBaseUrl(url) {
 export default function App() {
   const queryApi = new URLSearchParams(window.location.search).get('api')
   const defaultApi = normalizeBaseUrl(queryApi || import.meta.env.VITE_API_URL || '')
+  const hasDefaultApi = Boolean(defaultApi)
   const [backendUrl, setBackendUrl] = useState('')
   const [file, setFile] = useState(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -104,16 +105,18 @@ export default function App() {
       </header>
 
       <section className="card">
-        <div className="row" style={{ marginBottom: 10 }}>
-          <input
-            type="text"
-            placeholder="Backend URL (e.g., http://192.168.1.10:3000)"
-            value={backendUrl}
-            onChange={(e) => setBackendUrl(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') saveBackendUrl() }}
-          />
-          <button onClick={saveBackendUrl} className="ghost">Save</button>
-        </div>
+        {!hasDefaultApi && (
+          <div className="row" style={{ marginBottom: 10 }}>
+            <input
+              type="text"
+              placeholder="Backend URL (e.g., http://192.168.1.10:3000)"
+              value={backendUrl}
+              onChange={(e) => setBackendUrl(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') saveBackendUrl() }}
+            />
+            <button onClick={saveBackendUrl} className="ghost">Save</button>
+          </div>
+        )}
         <input type="file" onChange={onFileChange} />
         <div className="row" style={{ marginTop: 10 }}>
           <button onClick={upload} disabled={!canUpload}>
