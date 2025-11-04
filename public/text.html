@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Note - Copy Paste Tool</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <a href="/" class="home-link">← Home</a>
+                <h1>Text Note</h1>
+                <div class="note-id" id="note-id-display">Loading...</div>
+            </div>
+        </header>
+        
+        <main class="text-main">
+            <div class="text-input-container">
+                <textarea 
+                    id="text-input" 
+                    placeholder="Start typing your note here..."
+                    class="text-area"
+                ></textarea>
+                <button id="add-text-btn" class="add-btn">Add Text</button>
+            </div>
+            
+            <div class="notes-container" id="notes-container">
+                <!-- Notes will be displayed here -->
+            </div>
+        </main>
+    </div>
+    
+    <script src="/text.js"></script>
+</body>
+</html>
+
