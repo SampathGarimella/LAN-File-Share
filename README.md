@@ -16,12 +16,13 @@ A complete hybrid LAN-based file sharing application.
 - Backend (LAN): Express server with streaming downloads, `multer` disk storage, and hourly cleanup.
 
 Endpoints:
+
 - `POST /upload` — upload a file; returns `{ id, shareUrl, expiresAt }`
 - `GET /share/:id` — streams file to the client with `Content-Disposition: attachment` header
 - `GET /health` — simple health check
 - `GET /info` — helpful base URL and LAN IP info
- - `GET /bootstrap` — redirects to your frontend with `?api=<baseUrl>` prefilled
- - `GET /boot-qr` — PNG QR for the same pairing URL
+- `GET /bootstrap` — redirects to your frontend with `?api=<baseUrl>` prefilled
+- `GET /boot-qr` — PNG QR for the same pairing URL
 
 ---
 
@@ -49,9 +50,11 @@ copy-paste-text-file-tool-app/
 ## Backend — Run Locally on LAN
 
 Requirements:
+
 - Node.js 18+ recommended
 
 Setup & run:
+
 ```bash
 cd backend
 npm install
@@ -60,16 +63,19 @@ npm start
 ```
 
 Optional environment variables:
+
 - `PORT` (default `3000`)
 - `HOST` (default `0.0.0.0`)
 - `PUBLIC_BASE_URL` (e.g., `http://192.168.1.10:3000`) — overrides auto-detected LAN IP in returned share links
 
 Notes:
+
 - Uploads are stored on disk with a UUID filename and sidecar metadata `{id}.meta.json` containing `expiresAt` (24h).
 - Hourly cleanup removes expired files and metadata.
 - Downloads use streaming (`fs.createReadStream`) to support very large files efficiently.
 
 Finding your LAN IP (examples):
+
 - macOS: `ipconfig getifaddr en0` (Wi‑Fi) or `ipconfig getifaddr en1` (Ethernet)
 - Linux: `hostname -I` or `ip addr`
 - Windows: `ipconfig` (find IPv4 Address for your active adapter)
@@ -79,9 +85,11 @@ Finding your LAN IP (examples):
 ## Frontend — React + Vite (Deploy to Netlify)
 
 Requirements:
+
 - Node.js 18+ recommended
 
 Local development:
+
 ```bash
 cd frontend
 cp ENV.example .env   # edit VITE_API_URL with your LAN backend, e.g. http://192.168.1.10:3000
@@ -90,12 +98,14 @@ npm run dev
 ```
 
 Production build:
+
 ```bash
 npm run build
 # Outputs to frontend/dist
 ```
 
 Netlify deployment options:
+
 - Option A: Drag-and-drop `frontend/dist` into Netlify deploys
 - Option B: Connect the repo and set a build command + environment var
   - Build command: `npm run build`
@@ -105,6 +115,7 @@ Netlify deployment options:
 At runtime, the app also lets users change and save the Backend URL in the UI. This helps when people forget the IP.
 
 Pairing helpers (easiest onboarding):
+
 - Share `http://<lan-ip>:3000/bootstrap` — it opens your Netlify site with the Backend URL prefilled.
 - Or display/scan `http://<lan-ip>:3000/boot-qr` — a QR that opens the same prefilled link.
 - Frontend also accepts `?api=<baseUrl>` manually.
@@ -122,6 +133,7 @@ npm test
 ```
 
 Covered checks:
+
 - `GET /health` returns status
 - `GET /bootstrap` issues a redirect with `?api=`
 - `GET /boot-qr` returns a PNG image
@@ -144,13 +156,13 @@ Uploads created during tests are small and stored under `backend/uploads`.
 
 ## Pain Points & Solutions
 
-| Pain Point | Solution |
-| --- | --- |
-| Upload fails if internet not available | The frontend shows a clear message: “Local server not reachable — connect to same Wi‑Fi.” |
-| Browser timeouts on huge files | Downloads are streamed; you can later upgrade to resumable chunked uploads (tus) if needed. |
-| Storage fills up | Hourly cleanup removes files after 24 hours. |
-| Users forget backend IP | The frontend exposes a Backend URL field (also persisted to localStorage). |
-| Mobile access | QR code provided for instant open on phones. |
+| Pain Point                             | Solution                                                                                    |
+| -------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Upload fails if internet not available | The frontend shows a clear message: “Local server not reachable — connect to same Wi‑Fi.”   |
+| Browser timeouts on huge files         | Downloads are streamed; you can later upgrade to resumable chunked uploads (tus) if needed. |
+| Storage fills up                       | Hourly cleanup removes files after 24 hours.                                                |
+| Users forget backend IP                | The frontend exposes a Backend URL field (also persisted to localStorage).                  |
+| Mobile access                          | QR code provided for instant open on phones.                                                |
 
 ---
 
@@ -205,4 +217,3 @@ npm install
 npm run build
 # Deploy the generated dist/ to Netlify
 ```
-
