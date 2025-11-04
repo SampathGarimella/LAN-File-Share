@@ -26,10 +26,34 @@ export default function App() {
 
   const canUpload = useMemo(() => !!backendUrl && !!file && !isUploading, [backendUrl, file, isUploading])
 
+  async function verifyBackend(url) {
+    try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 3500)
+      const res = await fetch(`${url}/health`, { signal: controller.signal, cache: 'no-store' })
+      clearTimeout(timeout)
+      if (!res.ok) throw new Error(`Health ${res.status}`)
+      return true
+    } catch (e) {
+      return false
+    }
+  }
+
   async function saveBackendUrl() {
     const url = normalizeBaseUrl(backendUrl)
+    const ok = await verifyBackend(url)
+    if (!ok) {
+      setError('Backend not reachable. Ensure the URL resolves and the HTTPS certificate is trusted on this device.')
+      return
+    }
+    setError('')
     setBackendUrl(url)
     localStorage.setItem('lan_share_api_url', url)
+  }
+
+  function openBackend() {
+    if (!backendUrl) return
+    window.open(backendUrl, '_blank', 'noopener,noreferrer')
   }
 
   function onFileChange(e) {
@@ -115,6 +139,7 @@ export default function App() {
               onKeyDown={(e) => { if (e.key === 'Enter') saveBackendUrl() }}
             />
             <button onClick={saveBackendUrl} className="ghost">Save</button>
+            <button onClick={openBackend} className="ghost">Open</button>
           </div>
         )}
         <input type="file" onChange={onFileChange} />
