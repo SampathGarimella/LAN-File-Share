@@ -18,6 +18,7 @@ export default function App() {
   const [error, setError] = useState('')
   const [showQR, setShowQR] = useState(true)
   const [copied, setCopied] = useState(false)
+  const [ipCandidate, setIpCandidate] = useState('')
 
   useEffect(() => {
     const saved = localStorage.getItem('lan_share_api_url')
@@ -54,6 +55,20 @@ export default function App() {
   function openBackend() {
     if (!backendUrl) return
     window.open(backendUrl, '_blank', 'noopener,noreferrer')
+  }
+
+  async function tryDefaultHost() {
+    const url = 'https://lan-share.local:3443'
+    setBackendUrl(url)
+    await saveBackendUrl()
+  }
+
+  async function applyIpCandidate() {
+    const ip = (ipCandidate || '').trim()
+    if (!ip) return
+    const url = `https://${ip}:3443`
+    setBackendUrl(url)
+    await saveBackendUrl()
   }
 
   function onFileChange(e) {
@@ -156,7 +171,23 @@ export default function App() {
             <div style={{ width: `${progress}%` }} />
           </div>
         )}
-        {error && <div className="notice" style={{ color: '#ef4444' }}>{error}</div>}
+        {error && (
+          <div className="notice" style={{ color: '#ef4444' }}>
+            {error}
+            <div className="row" style={{ marginTop: 10 }}>
+              <button className="ghost" onClick={tryDefaultHost}>Try lan-share.local (HTTPS)</button>
+              <input
+                type="text"
+                placeholder="Your LAN IP (e.g., 192.168.1.10)"
+                value={ipCandidate}
+                onChange={(e) => setIpCandidate(e.target.value)}
+                style={{ minWidth: 200 }}
+              />
+              <button className="ghost" onClick={applyIpCandidate}>Use IP on 3443</button>
+            </div>
+            <div className="notice">Tip: Click Open to trust the certificate, then Save again.</div>
+          </div>
+        )}
       </section>
 
       {shareLink && (
