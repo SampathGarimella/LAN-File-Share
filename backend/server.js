@@ -185,18 +185,20 @@ async function cleanupExpired() {
 setInterval(cleanupExpired, 60 * 60 * 1000);
 cleanupExpired();
 
-const server = app.listen(PORT, HOST, () => {
-  const base = `http://${LAN_IP || 'localhost'}:${PORT}`;
-  const pairing = `${FRONTEND_URL}?api=${encodeURIComponent(base)}`;
-  console.log(`LAN File Share backend on ${base}`);
-  console.log(`Pairing URL: ${pairing}`);
-  console.log(`Bootstrap: ${base}/bootstrap`);
-  console.log(`QR: ${base}/boot-qr`);
-});
-
-server.requestTimeout = 0;
-server.headersTimeout = 0;
-server.keepAliveTimeout = 120000;
+let server = null;
+if (!process.env.DISABLE_HTTP) {
+  server = app.listen(PORT, HOST, () => {
+    const base = `http://${LAN_IP || 'localhost'}:${PORT}`;
+    const pairing = `${FRONTEND_URL}?api=${encodeURIComponent(base)}`;
+    console.log(`LAN File Share backend on ${base}`);
+    console.log(`Pairing URL: ${pairing}`);
+    console.log(`Bootstrap: ${base}/bootstrap`);
+    console.log(`QR: ${base}/boot-qr`);
+  });
+  server.requestTimeout = 0;
+  server.headersTimeout = 0;
+  server.keepAliveTimeout = 120000;
+}
 
 module.exports = app;
 
