@@ -122,6 +122,116 @@ Pairing helpers (easiest onboarding):
 
 ---
 
+## Local Development Setup
+
+Quick start for local development (both frontend and backend on your machine):
+
+### Prerequisites
+
+- Node.js 18+ installed
+- Both `backend` and `frontend` folders present
+
+### Step 1: Start Backend (HTTP mode)
+
+Open a terminal and run:
+
+```bash
+cd backend
+npm install
+PORT=3200 HOST=127.0.0.1 node server.js
+```
+
+You should see:
+```
+LAN File Share backend on http://127.0.0.1:3200
+```
+
+Test it: Open `http://127.0.0.1:3200/health` in your browser — should return `{"status":"ok",...}`
+
+### Step 2: Start Frontend (Vite dev server)
+
+Open a **second terminal** and run:
+
+```bash
+cd frontend
+npm install
+npm run dev -- --host
+```
+
+Vite will start on `http://127.0.0.1:5173` (or next available port).
+
+### Step 3: Pair Frontend with Backend
+
+Open your browser to:
+
+```
+http://127.0.0.1:5173/?api=http://127.0.0.1:3200
+```
+
+The app will:
+1. Read `?api=http://127.0.0.1:3200` from the URL
+2. Store it in `localStorage`
+3. Hide the backend URL input field (since it's preconfigured)
+4. Allow you to upload files immediately
+
+### Step 4: Test Upload & Download
+
+1. Click "Choose File" and select any file
+2. Click "Upload"
+3. You'll see a share link like `http://127.0.0.1:3200/share/<id>`
+4. Copy the link or scan the QR code
+5. Open the link in another tab/window → file downloads
+
+### How It Works Locally
+
+- **Backend**: Stores files in `backend/uploads/` with UUID filenames
+- **Metadata**: Each file has a `.meta.json` sidecar with expiration (24h)
+- **Cleanup**: Runs hourly to remove expired files
+- **Streaming**: Large files are streamed (not loaded into memory)
+
+### Local Development Tips
+
+- **Change backend port**: Set `PORT=4000` when starting backend
+- **Change frontend port**: Vite auto-detects; or set in `vite.config.js`
+- **Auto-reload**: Frontend hot-reloads on code changes (Vite)
+- **Backend restart**: Restart `node server.js` after backend code changes
+- **Persist backend URL**: Once paired, refresh the page — it remembers from `localStorage`
+
+### Troubleshooting Local Setup
+
+| Issue | Solution |
+|-------|----------|
+| Backend not starting | Check if port is in use: `lsof -iTCP:3200` |
+| Frontend can't connect | Verify backend is running: `curl http://127.0.0.1:3200/health` |
+| Upload fails | Check browser console for CORS errors (shouldn't happen locally) |
+| Files not appearing | Check `backend/uploads/` directory exists and is writable |
+
+### Local HTTPS Mode (optional)
+
+To test HTTPS locally (matching Netlify setup):
+
+1. Generate certs:
+   ```bash
+   cd backend
+   mkdir -p certs
+   mkcert -key-file certs/key.pem -cert-file certs/cert.pem localhost 127.0.0.1
+   ```
+
+2. Start HTTPS backend:
+   ```bash
+   DISABLE_HTTP=1 \
+   FRONTEND_URL=http://127.0.0.1:5173 \
+   PUBLIC_BASE_URL=https://127.0.0.1:3443 \
+   HTTPS_PORT=3443 \
+   npm run start:https
+   ```
+
+3. Open frontend with: `http://127.0.0.1:5173/?api=https://127.0.0.1:3443`
+
+4. Trust the certificate when browser prompts (mkcert installs CA automatically on macOS)
+
+---
+
 ## Testing
 
 Backend API tests use Jest and Supertest.
