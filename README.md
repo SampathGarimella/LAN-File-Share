@@ -157,9 +157,10 @@ Use an HTTPS backend on the LAN:
    # Include hostnames or IPs you will use
    mkcert -key-file backend/certs/key.pem -cert-file backend/certs/cert.pem "lan-share.local" 192.168.1.10
    ```
-2. Start HTTPS server:
+2. Start HTTPS server (HTTP disabled):
    ```bash
    cd backend
+   DISABLE_HTTP=1 \
    FRONTEND_URL=https://<your-site>.netlify.app \
    PUBLIC_BASE_URL=https://lan-share.local:3443 \
    HTTPS_PORT=3443 \
@@ -195,7 +196,7 @@ Netlify settings:
 - Publish directory: `dist`
 - Functions directory: `frontend/netlify/functions`
 - Environment variables:
-  - `API_BASE_URL` = `https://lan-share.local:3443` (your stable HTTPS LAN backend)
+  - `API_BASE_URL` = `https://lan-share.local:3443` (or `https://<LAN-IP>:3443`)
   - `NODE_VERSION` = `18`
 
 Backend settings:

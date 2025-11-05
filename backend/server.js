@@ -35,6 +35,8 @@ const LAN_IP = getLanIpv4();
 app.use(cors());
 app.use((req, res, next) => {
   res.setHeader('X-Powered-By', 'LAN File Share');
+  // Help browsers using Private Network Access when applicable
+  res.setHeader('Access-Control-Allow-Private-Network', 'true');
   next();
 });
 
