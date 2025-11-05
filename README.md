@@ -219,6 +219,38 @@ After deploy, opening the site root will auto-pair and no manual backend entry i
 
 ---
 
+## End‑User Guide (what users will see)
+
+Requirements:
+
+- Be on the same Wi‑Fi/LAN as the computer running the file server.
+- Use the site link you’re given (for example: `https://temp-files.netlify.app`).
+
+Steps:
+
+1. Open the site link.
+2. The app tries to pair with the local server automatically.
+   - If paired, the input field hides. You can upload immediately.
+   - If not paired, you’ll see a small helper panel:
+     - “Try lan-share.local (HTTPS)” — use this if your IT or laptop advertises the server name on the LAN.
+     - “Your LAN IP (e.g., 192.168.1.10) → Use IP on 3443” — type the server’s IP and click the button.
+     - “Open” — opens the server address in a new tab so you can trust/allow the connection if your browser asks.
+3. Choose a file and click “Upload”.
+4. You’ll get a share link and a QR code. Share either with others on the same Wi‑Fi.
+5. Links expire automatically after 24 hours.
+
+Troubleshooting:
+
+- “Local server not reachable”: Make sure you’re on the same Wi‑Fi as the server. Click “Open” and allow/continue if the browser asks about the connection; then click “Save” again.
+- If the server name doesn’t work, try the IP address with port 3443 (for example `https://192.168.1.10:3443`).
+- If you still can’t connect, ask the person hosting the server for the correct address or scan their QR pairing code.
+
+Privacy note:
+
+- Files move only inside your local network. The website itself is hosted on Netlify, but uploads and downloads are served by your local server.
+
+---
+
 ## Pain Points & Solutions
 
 | Pain Point                             | Solution                                                                                    |
